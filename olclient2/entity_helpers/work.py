@@ -8,9 +8,9 @@ from typing import List, Dict, Optional, Any
 import backoff
 from requests import Response
 
-from olclient.common import Entity, Book
-from olclient.helper_classes.results import Results
-from olclient.utils import merge_unique_lists, get_text_value, get_approval_from_cli
+from olclient2.common import Entity, Book
+from olclient2.helper_classes.results import Results
+from olclient2.utils import merge_unique_lists, get_text_value, get_approval_from_cli
 
 logger = logging.getLogger('open_library_work')
 
@@ -60,7 +60,7 @@ def get_work_helper_class(ol_context):
             Returns
                 (List) of common.Edition books
             Usage:
-                >>> from olclient import OpenLibrary
+                >>> from olclient2 import OpenLibrary
                 >>> ol = OpenLibrary()
                 >>> ol.Work(olid).editions
             """
@@ -88,8 +88,8 @@ def get_work_helper_class(ol_context):
         def create(cls, book: Book, debug=False) -> Work:
             """Creates a new work along with a new edition
             Usage:
-                >>> from olclient.openlibrary import OpenLibrary
-                >>> import olclient.common as common
+                >>> from olclient2.openlibrary import OpenLibrary
+                >>> import olclient2.common as common
                 >>> book = common.Book(title=u"Warlight: A novel", authors=[common.Author(name=u"Michael Ondaatje")], publisher=u"Deckle Edge", publish_date=u"2018")
                 >>> book.add_id(u'isbn_10', u'0525521194')
                 >>> book.add_id(u'isbn_13', u'978-0525521198'))
@@ -174,12 +174,12 @@ def get_work_helper_class(ol_context):
                 Book object if found, None otherwise
                 
             Usage:
-                >>> from olclient.openlibrary import OpenLibrary
+                >>> from olclient2.openlibrary import OpenLibrary
                 >>> ol = OpenLibrary()
                 >>> ol.get_book_by_metadata(
                 ...     title=u'The Autobiography of Benjamin Franklin')
                 or
-                >>> from olclient.openlibrary import OpenLibrary
+                >>> from olclient2.openlibrary import OpenLibrary
                 >>> ol = OpenLibrary()
                 >>> ol.get_book_by_metadata(
                 ...     author=u'Dan Brown',

@@ -4,8 +4,8 @@ import sys
 sys.path.insert(0, '../')
 
 # Import necessary libraries to use
-from olclient.openlibrary import OpenLibrary
-import olclient.common as common
+from olclient2.openlibrary import OpenLibrary
+import olclient2.common as common
 
 
 def main():

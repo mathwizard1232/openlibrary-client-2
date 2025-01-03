@@ -6,13 +6,13 @@ import sys
 import unittest
 
 from argparse import ArgumentTypeError
-from olclient.openlibrary import OpenLibrary
-from olclient.bots import AbstractBotJob
+from olclient2.openlibrary import OpenLibrary
+from olclient2.bots import AbstractBotJob
 from os import path
 from unittest.mock import MagicMock, Mock, call, patch, ANY
 
 
-@patch('olclient.openlibrary.OpenLibrary.login')
+@patch('olclient2.openlibrary.OpenLibrary.login')
 class TestBots(unittest.TestCase):
     def setUp(self):
         self.truthy_values = ['yes', 'true', 't', 'y', '1']
@@ -94,7 +94,7 @@ class TestBots(unittest.TestCase):
         assert isinstance(returned_row, list)
         assert isinstance(returned_json_data, dict)
 
-    @patch('olclient.bots.sys.exit')
+    @patch('olclient2.bots.sys.exit')
     def test_save_exits_when_limit_reached(self, mock_login, mock_sys_exit):
         save_fn = Mock()
         bot = AbstractBotJob(write_changes=False, limit=10)
@@ -109,7 +109,7 @@ class TestBots(unittest.TestCase):
         assert bot.changed == bot.limit
         assert bot.logger.info.call_count == bot.limit + 1
 
-    @patch('olclient.bots.sys.exit')
+    @patch('olclient2.bots.sys.exit')
     def test_save_when_write_changes_is_true(self, mock_login, mock_sys_exit):
         save_fn = Mock()
         bot = AbstractBotJob(write_changes=True)
@@ -122,7 +122,7 @@ class TestBots(unittest.TestCase):
         assert bot.changed == old_changed + 1
         assert not bot.changed > bot.limit
 
-    @patch('olclient.bots.sys.exit')
+    @patch('olclient2.bots.sys.exit')
     def test_save_when_write_changes_is_false(self, mock_login, mock_sys_exit):
         save_fn = Mock()
         bot = AbstractBotJob(write_changes=False)

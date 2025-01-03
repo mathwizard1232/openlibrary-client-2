@@ -14,7 +14,7 @@ from datetime import datetime
 from os import makedirs, path
 from typing import Tuple
 
-from olclient.openlibrary import OpenLibrary
+from olclient2.openlibrary import OpenLibrary
 
 
 class AbstractBotJob:

@@ -48,14 +48,14 @@ Successfully configured
 #### Using Keys Directly
 The ol.ini has two variables, access and secret. If you have both of them, you can manually initialise them
 ```python
-from olclient import OpenLibrary, config
+from olclient2 import OpenLibrary, config
 ol = OpenLibrary(credentials=config.Credentials(access='<access>', secret='<secret>'))
 ```
 This way, access and secret can be pulled from environment variables at runtime!
 
 ### Authentication Against the Local Development Environment
 ```python
-from olclient import OpenLibrary
+from olclient2 import OpenLibrary
 from collections import namedtuple
 Credentials = namedtuple("Credentials", ["username", "password"])
 credentials = Credentials("openlibrary@example.com", "admin123")
@@ -76,8 +76,8 @@ You can view interactive documentation of openlibrary-client at this [Google Col
 
 Fun things you can do to add a new book to Open Library
 ```python
->>> from olclient.openlibrary import OpenLibrary
->>> import olclient.common as common
+>>> from olclient2.openlibrary import OpenLibrary
+>>> import olclient2.common as common
 >>> ol = OpenLibrary()
 >>> book = common.Book(title=u"Warlight: A novel", authors=[common.Author(name=u"Michael Ondaatje")], publisher=u"Deckle Edge", publish_date=u"2018")
 >>> book.add_id(u'isbn_10', u'0525521194')
@@ -91,7 +91,7 @@ Fun things you can do to add a new book to Open Library
 Fun things you can do with an Work:
 
 ```python
->>> from olclient.openlibrary import OpenLibrary
+>>> from olclient2.openlibrary import OpenLibrary
 >>> ol = OpenLibrary()
 >>> work = ol.Work.get(u'OL12938932W')
 >>> editions = work.editions
@@ -103,7 +103,7 @@ One thing to consider in the snippet above is that work.editions is a @property 
 
 Fun things you can do with an Edition:
 ```python
->>> from olclient.openlibrary import OpenLibrary
+>>> from olclient2.openlibrary import OpenLibrary
 >>> ol = OpenLibrary()
 >>> edition = ol.Edition.get(u'OL25952968M')
 >>> authors = edition.authors
@@ -116,7 +116,7 @@ Fun things you can do with an Edition:
 
 Author Information for existing authors can be done in the following manner.
 ```python
->>> from olclient.openlibrary import OpenLibrary
+>>> from olclient2.openlibrary import OpenLibrary
 >>> ol = OpenLibrary()
 >>> author_olid = ol.Author.get_olid_by_name('Dan Brown')
 >>> author_obj = ol.get(author_olid)
@@ -134,7 +134,7 @@ usage: ol [-h] [-v] [--configure] [--get-work] [--get-author-works]
           [--create CREATE] [--title TITLE] [--author-name AUTHOR_NAME]
           [--baseurl BASEURL] [--email EMAIL]
 
-olclient
+olclient2
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -156,7 +156,7 @@ optional arguments:
                         You will be prompted discretely for a password
 ```
 
-You can create a new work from the command line using the following syntax. It's almost identical to the olclient.common.Book object construction, except instead of providing an Author object, you instead pass a key for "author" and a corresponding value:
+You can create a new work from the command line using the following syntax. It's almost identical to the olclient2.common.Book object construction, except instead of providing an Author object, you instead pass a key for "author" and a corresponding value:
 
 ```
 > ol --create '{"title": "The Cartoon Guide to Calculus", "publisher": "Teach Yourself", "publish_date": "2013", "identifiers": {"isbn_10": ["144419111X"]}, "cover": "https://images-na.ssl-images-amazon.com/images/I/51aJdEGttLL._SX328_BO1,204,203,200_.jpg", "author": "Hugh Neill"}'

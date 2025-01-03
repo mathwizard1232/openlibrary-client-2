@@ -1,5 +1,5 @@
 import pytest
-from olclient.utils import merge_unique_lists
+from olclient2.utils import merge_unique_lists
 
 
 merge_cases = [

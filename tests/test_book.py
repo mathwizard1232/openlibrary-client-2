@@ -2,7 +2,7 @@ import json
 import os
 import unittest
 
-from olclient.common import Book, Author
+from olclient2.common import Book, Author
 
 EXAMPLES_PATH = os.path.abspath(
     os.path.join(

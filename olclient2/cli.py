@@ -18,8 +18,8 @@ import sys
 
 import internetarchive as ia
 
-from olclient import __title__, __version__, OpenLibrary, common
-from olclient.config import Config, Credentials
+from olclient2 import __title__, __version__, OpenLibrary, common
+from olclient2.config import Config, Credentials
 
 
 def argparser():
@@ -106,8 +106,8 @@ def main() -> None:
     except ValueError as e:
         if str(e) == 'No cookie set':
             print(
-                "Seems like you haven't configured your olclient with credentials.\n"
-                "You can configure olclient using the following command:\n"
+                "Seems like you haven't configured your olclient2 with credentials.\n"
+                "You can configure olclient2 using the following command:\n"
                 "$ol --configure --email <EMAIL>\n"
             )
             return parser.print_help()

@@ -11,7 +11,7 @@ You can obtain dumps from https://openlibrary.org/developers/dumps
 import copy
 import gzip
 
-from olclient.bots import AbstractBotJob
+from olclient2.bots import AbstractBotJob
 
 
 class TrimTitleJob(AbstractBotJob):

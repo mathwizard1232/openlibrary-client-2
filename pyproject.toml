@@ -4,8 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 dynamic = ["version"]
-name = "openlibrary-client"
-authors = [{name = "Internet Archive", email = "mek@archive.org"}]
+name = "openlibrary-client-2"
+version = "0.0.1"
+authors = [{name = "Internet Archive", email = "mek@archive.org"},
+            {name = "Shaun Gosse", email = "responsivedesign@gmail.com"}]
 license = {text = "LICENSE"}
 description = "A Python client for Open Library"
 readme = "README.md"
@@ -33,18 +35,18 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/internetarchive/openlibrary-client"
+Homepage = "https://github.com/mathwizard1232/openlibrary-client-2"
 
 [project.scripts]
-ol = "olclient.cli:main"
+ol = "olclient2.cli:main"
 
 [tool.setuptools]
-packages = ["olclient"]
+packages = ["olclient2"]
 include-package-data = true
 platforms = ["any"]
 
 [tool.setuptools.dynamic]
-version = {attr = "olclient.__version__"}
+version = {attr = "olclient2.__version__"}
 
 [tool.distutils.bdist_wheel]
 universal = 1

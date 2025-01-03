@@ -63,8 +63,8 @@ class Config:
         """
         config_dir = os.path.expanduser('~/.config')
         if not os.path.isdir(config_dir):
-            return os.path.expanduser('~/.ol')
-        return f'{config_dir}/ol.ini'
+            return os.path.expanduser('~/.ol2')
+        return f'{config_dir}/ol2.ini'
 
     def update(self, config):
         """Updates the config defaults by updating it with config dict values

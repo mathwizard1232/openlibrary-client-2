@@ -1,7 +1,7 @@
 from typing import Optional
 
-from olclient.common import Book
-from olclient.utils import extract_olid_from_url
+from olclient2.common import Book
+from olclient2.utils import extract_olid_from_url
 
 
 class Results:

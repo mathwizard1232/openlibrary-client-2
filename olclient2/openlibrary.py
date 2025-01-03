@@ -15,10 +15,10 @@ import backoff
 import requests
 from requests import Response
 
-from olclient import common
-from olclient.config import Config
-from olclient.entity_helpers.work import get_work_helper_class
-from olclient.utils import merge_unique_lists
+from olclient2 import common
+from olclient2.config import Config
+from olclient2.entity_helpers.work import get_work_helper_class
+from olclient2.utils import merge_unique_lists
 
 logger = logging.getLogger('openlibrary')
 
@@ -28,8 +28,8 @@ class OpenLibrary:
     """Open Library API Client.
 
     Usage:
-        >>> from olclient.openlibrary import OpenLibrary
-        >>> import olclient.common as common
+        >>> from olclient2.openlibrary import OpenLibrary
+        >>> import olclient2.common as common
         >>> ol = OpenLibrary(base_url="http://0.0.0.0:8080")
 
         ... #  Create a new book
@@ -153,7 +153,7 @@ class OpenLibrary:
     @property
     def Work(self):
         """
-        >>> from olclient import OpenLibrary
+        >>> from olclient2 import OpenLibrary
         >>> ol = OpenLibrary()
         >>> ol.Work.get(olid)
         """
@@ -184,7 +184,7 @@ class OpenLibrary:
                     TypeError: __init__() missing 2 required positional arguments: 'edition_olid' and 'title'
 
                 Usage:
-                    >>> from olclient.openlibrary import OpenLibrary
+                    >>> from olclient2.openlibrary import OpenLibrary
                     >>> ol = OpenLibrary()
                     >>> e = ol.Edition(u'OL2514725W')
                     >>> e.book
@@ -299,7 +299,7 @@ class OpenLibrary:
                     Edition Object
 
                 Usage:
-                    >>> from olclient import OpenLibrary
+                    >>> from olclient2 import OpenLibrary
                     >>> ol = OpenLibrary()
                     >>> = ol.Edition.create(Book(...), u'OL2514725W')
                 """
@@ -316,7 +316,7 @@ class OpenLibrary:
                     book arguments Dictionary
 
                 Usage:
-                    >>> from olclient import OpenLibrary
+                    >>> from olclient2 import OpenLibrary
                     >>> ol = OpenLibrary()
                     >>> = ol.Edition.ol_edition_json_to_book_args(data)
                 """
@@ -349,7 +349,7 @@ class OpenLibrary:
                     into a form it can use (or marshal its internal book json into a form others can use).
 
                 Usage:
-                    >>> from olclient import OpenLibrary
+                    >>> from olclient2 import OpenLibrary
                     >>> ol = OpenLibrary()
 
                     >>> ol.Edition.get(olid=u'OL25944230M')
@@ -442,7 +442,7 @@ class OpenLibrary:
                     Dict or None
 
                 Usage:
-                    >>> from olclient import OpenLibrary
+                    >>> from olclient2 import OpenLibrary
                     >>> ol = OpenLibrary()
 
                     >>> ol.Edition.get_metadata(u'ISBN', u'9780747550303')
@@ -533,7 +533,7 @@ class OpenLibrary:
                     Author.
 
                 Usage:
-                    >>> from olclient.openlibrary import OpenLibrary
+                    >>> from olclient2.openlibrary import OpenLibrary
                     >>> ol = OpenLibrary()
                     >>> ol.Author.get('OL39307A').works()
                     or
@@ -573,7 +573,7 @@ class OpenLibrary:
                     authors autocomplete API
 
                 Usage:
-                    >>> from olclient.openlibrary import OpenLibrary
+                    >>> from olclient2.openlibrary import OpenLibrary
                     >>> ol = OpenLibrary()
                     >>> ol.Author.get('OL39307A')
                 """
@@ -609,7 +609,7 @@ class OpenLibrary:
                     authors autocomplete API
 
                 Usage:
-                    >>> from olclient.openlibrary import OpenLibrary
+                    >>> from olclient2.openlibrary import OpenLibrary
                     >>> ol = OpenLibrary()
                     >>> ol.Author.search('Dan Brown')
                     or
@@ -651,7 +651,7 @@ class OpenLibrary:
                     olid (unicode)
 
                 Usage:
-                    >>> from olclient.openlibrary import OpenLibrary
+                    >>> from olclient2.openlibrary import OpenLibrary
                     >>> ol = OpenLibrary()
                     >>> ol.Author.get_olid_by_name('Dan Brown')
                 """
