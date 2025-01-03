@@ -3,7 +3,6 @@ requires = ["setuptools>=61.2"]
 build-backend = "setuptools.build_meta"
 
 [project]
-dynamic = ["version"]
 name = "openlibrary-client-2"
 version = "0.0.1"
 authors = [{name = "Internet Archive", email = "mek@archive.org"},
@@ -44,9 +43,6 @@ ol = "olclient2.cli:main"
 packages = ["olclient2"]
 include-package-data = true
 platforms = ["any"]
-
-[tool.setuptools.dynamic]
-version = {attr = "olclient2.__version__"}
 
 [tool.distutils.bdist_wheel]
 universal = 1
