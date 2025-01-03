@@ -1,9 +1,11 @@
-openlibrary-client
+openlibrary-client-2
 ==================
 
-[![pre-commit](https://github.com/internetarchive/openlibrary-client/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/internetarchive/openlibrary-client/actions/workflows/pre-commit.yml) [![test_python](https://github.com/internetarchive/openlibrary-client/actions/workflows/test_python.yml/badge.svg)](https://github.com/internetarchive/openlibrary-client/actions/workflows/test_python.yml)
+A fork of the reference client library for the Open Library API. Untested.
 
-A reference client library for the Open Library API. Tested with Python 3.7, 3.8, 3.9, and 3.10.
+The goal is to add features on top of the existing base and pull in open PRs.
+
+The first feature will be searching for Works with multiple results (had a case with wrong top result).
 
 - [Installation](#installation)
 - [Configuration](#configuration)
@@ -13,21 +15,21 @@ A reference client library for the Open Library API. Tested with Python 3.7, 3.8
 
 ## Installation
 
-To install the openlibrary-client package:
+To install the openlibrary-client-2 package:
 ```
-$ pipx install git+https://github.com/internetarchive/openlibrary-client.git
-```
-__-- or --__
-```
-pip install git+https://github.com/internetarchive/openlibrary-client.git
+$ pipx install git+https://github.com/mathwizard1232/openlibrary-client-2.git
 ```
 __-- or --__
 ```
-$ git clone https://github.com/internetarchive/openlibrary-client.git
+pip install git+https://github.com/mathwizard1232/openlibrary-client-2.git
+```
+__-- or --__
+```
+$ git clone https://github.com/mathwizard1232/openlibrary-client-2.git
 $ cd openlibrary-client
 $ pip install .
 -- or --
-$ pipx install git+https://github.com/internetarchive/openlibrary-client.git
+$ pipx install git+https://github.com/mathwizard1232/openlibrary-client-2.git
 ```
 
 ## Configuration

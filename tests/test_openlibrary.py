@@ -285,6 +285,26 @@ class TestOpenLibrary(unittest.TestCase):
         self.assertEqual('/type/redirect', redirect.json()['type']['key'])
         self.assertIn('location', redirect.json())
 
+    @patch('requests.Session.get')
+    def test_search_with_limit(self, mock_get):
+        docs = [
+            {"key": "/works/OL1W", "title": "Book 1"},
+            {"key": "/works/OL2W", "title": "Book 2"},
+            {"key": "/works/OL3W", "title": "Book 3"}
+        ]
+        search_results = {'start': 0, 'num_found': 3, 'docs': docs}
+        title = "Test Books"
+        limit = 2
+        mock_get.return_value.json.return_value = search_results
+        
+        books = self.ol.Work.search(title=title, limit=limit)
+        mock_get.assert_called_with(f"{self.ol.base_url}/search.json?title={title}&limit={limit}")
+        
+        self.assertIsInstance(books, list)
+        self.assertEqual(len(books), limit)
+        self.assertEqual(books[0].title, "Book 1")
+        self.assertEqual(books[1].title, "Book 2")
+
 
 class TestAuthors(unittest.TestCase):
     @patch('olclient.openlibrary.OpenLibrary.login')

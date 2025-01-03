@@ -161,10 +161,18 @@ def get_work_helper_class(ol_context):
             return cls(olid, **r.json())
 
         @classmethod
-        def search(cls, title: Optional[str] = None, author: Optional[str] = None) -> Optional[Book]:
+        def search(cls, title: Optional[str] = None, author: Optional[str] = None, limit: Optional[int] = None) -> Optional[Book]:
             """Get the *closest* matching result in OpenLibrary based on a title
             and author.
-            FIXME: This is essentially a Work and should be moved there
+            
+            Args:
+                title: Title of the work to search for
+                author: Author of the work to search for
+                limit: Maximum number of results to return (default: None returns only closest match)
+                
+            Returns:
+                Book object if found, None otherwise
+                
             Usage:
                 >>> from olclient.openlibrary import OpenLibrary
                 >>> ol = OpenLibrary()
@@ -174,7 +182,8 @@ def get_work_helper_class(ol_context):
                 >>> from olclient.openlibrary import OpenLibrary
                 >>> ol = OpenLibrary()
                 >>> ol.get_book_by_metadata(
-                ...     author=u'Dan Brown')
+                ...     author=u'Dan Brown',
+                ...     limit=5)
             """
             if not (title or author):
                 raise ValueError("Author or title required for metadata search")
@@ -182,6 +191,8 @@ def get_work_helper_class(ol_context):
             url = f'{cls.OL.base_url}/search.json?title={title}'
             if author:
                 url += f'&author={author}'
+            if limit:
+                url += f'&limit={limit}'
 
             @backoff.on_exception(
                 on_giveup=lambda error: logger.exception(
@@ -196,6 +207,8 @@ def get_work_helper_class(ol_context):
             results = Results(**response.json())
 
             if results.num_found:
+                if limit and limit > 1:
+                    return [doc.to_book() for doc in results.docs[:limit]]
                 return results.first.to_book()
 
             return None

@@ -16,6 +16,7 @@ class Results:
     def first(self):
         if self.docs:
             return self.docs[0]
+        return None
 
     class Document:
         """An aggregate OpenLibrary Work summarizing all Editions of a Book"""
