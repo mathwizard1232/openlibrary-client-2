@@ -63,6 +63,13 @@ class OpenLibrary:
 
     def __init__(self, credentials=None, base_url='https://openlibrary.org'):
         self.session = requests.Session()
+        # Set identifying headers as per https://openlibrary.org/developers/api
+        # Identifying as the author of the forked client
+        # Feel free to override this as an end user; I just want to allow OpenLibrary to contact me if there are issues
+        self.session.headers.update({
+            'User-Agent': f'openlibrary-client-2/0.0.1 (responsivedesign@gmail.com)',
+            'Accept': 'application/json'
+        })
         self.base_url = base_url
         credentials = credentials or Config().get_config().get('s3', None)
         if credentials:
