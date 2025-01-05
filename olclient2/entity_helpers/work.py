@@ -8,7 +8,7 @@ from typing import List, Dict, Optional, Any
 import backoff
 from requests import Response
 
-from olclient2.common import Entity, Book
+from olclient2.common import Entity, Book, Author
 from olclient2.helper_classes.results import Results
 from olclient2.utils import merge_unique_lists, get_text_value, get_approval_from_cli
 
@@ -212,5 +212,69 @@ def get_work_helper_class(ol_context):
                 return results.first.to_book()
 
             return None
+
+        @classmethod
+        def search_by_isbn(cls, isbn: str) -> Optional[Book]:
+            """Search for a work using an ISBN.
+            
+            Args:
+                isbn: ISBN-10 or ISBN-13 to search for
+                
+            Returns:
+                Book object if found, None otherwise
+                
+            Usage:
+                >>> from olclient2.openlibrary import OpenLibrary
+                >>> ol = OpenLibrary()
+                >>> book = ol.Work.search_by_isbn('067165408X')
+            """
+            # Clean ISBN
+            isbn = isbn.replace('-', '').strip()
+            
+            # Use search API with ISBN
+            url = f'{cls.OL.base_url}/search.json?isbn={isbn}'
+            
+            @backoff.on_exception(
+                on_giveup=lambda error: logger.exception(
+                    "Error retrieving work by ISBN: %s", error
+                ),
+                **cls.OL.BACKOFF_KWARGS,
+            )
+            def _get_work_by_isbn(ol_url):
+                return cls.OL.session.get(ol_url)
+
+            response = _get_work_by_isbn(url)
+            data = response.json()
+            
+            if not data.get('docs'):
+                return None
+                
+            # Get first matching work
+            doc = data['docs'][0]
+            
+            # Create authors with OLIDs if available
+            authors = []
+            for i, name in enumerate(doc.get('author_name', [])):
+                author = Author(name=name)
+                if 'author_key' in doc and i < len(doc['author_key']):
+                    author.olid = doc['author_key'][i]
+                authors.append(author)
+            
+            # Create Book object with work data
+            book = Book(
+                title=doc['title'],
+                authors=authors,
+                publisher=doc.get('publisher', [''])[0] if doc.get('publisher') else '',
+                publish_date=doc.get('publish_date', [''])[0] if doc.get('publish_date') else ''
+            )
+            
+            # Add identifiers
+            work_olid = doc['key'].split('/')[-1]
+            book.add_id('olid', work_olid)
+            if 'isbn' in doc:
+                for isbn in doc['isbn']:
+                    book.add_id('isbn_13' if len(isbn) == 13 else 'isbn_10', isbn)
+            
+            return book
 
     return Work
