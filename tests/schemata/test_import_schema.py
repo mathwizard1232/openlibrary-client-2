@@ -1,12 +1,14 @@
 import json
-from nturl2path import pathname2url
+from urllib.request import pathname2url
 import jsonschema
 import os
 import pytest
 
-IMPORT_SCHEMA = os.path.join(
-    os.path.dirname(__file__), '..', '..', 'olclient', 'schemata', 'import.schema.json'
-)
+# Get the root directory of the project (two levels up from this file)
+ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+
+# Path to the schema file
+IMPORT_SCHEMA = os.path.join(ROOT_DIR, 'olclient2', 'schemata', 'import.schema.json')
 
 # Examples taken from openlibrary/plugins/importapi/import_edition_builder.py
 
