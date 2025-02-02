@@ -205,6 +205,7 @@ def get_work_helper_class(ol_context):
             def _get_book_by_metadata(ol_url):
                 return cls.OL.session.get(ol_url)
 
+            logger.debug(f"Searching for book with URL: {url}")
             response = _get_book_by_metadata(url)
             response_data = response.json()
             logger.debug(f"Raw API response: {response_data}")
