@@ -208,7 +208,20 @@ def get_work_helper_class(ol_context):
 
             if results.num_found:
                 if limit and limit > 1:
-                    return [doc.to_book() for doc in results.docs[:limit]]
+                    # Deduplicate works based on title and author combination
+                    seen_works = {}  # (title, author_names) -> doc mapping
+                    for doc in results.docs:
+                        dedup_key = (
+                            doc.get('title', '').lower(),
+                            tuple(sorted(doc.get('author_name', [])))
+                        )
+                        # If we haven't seen this title/author combination before, or this work has a more complete record
+                        if dedup_key not in seen_works or len(doc) > len(seen_works[dedup_key]):
+                            seen_works[dedup_key] = doc
+                    
+                    # Convert back to list and create book objects
+                    deduped_docs = list(seen_works.values())[:limit]
+                    return [doc.to_book() for doc in deduped_docs]
                 return results.first.to_book()
 
             return None
