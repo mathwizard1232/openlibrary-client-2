@@ -563,7 +563,23 @@ class OpenLibrary:
 
                 try:
                     response = self.OL.get_ol_response(path)
-                    return response.json()
+                    data = response.json()
+                    
+                    # Deduplicate works based on title and author combination
+                    seen_works = {}  # (title, author_names) -> work mapping
+                    for work in data.get('entries', []):
+                        dedup_key = (
+                            work.get('title', '').lower(),
+                            tuple(sorted(author.get('name', '') for author in work.get('authors', [])))
+                        )
+                        # If we haven't seen this title/author combination before, or this work has a more complete record
+                        if dedup_key not in seen_works or len(work) > len(seen_works[dedup_key]):
+                            seen_works[dedup_key] = work
+                    
+                    # Convert back to list and respect the limit
+                    deduped_works = list(seen_works.values())[:limit]
+                    return {'entries': deduped_works, 'size': len(deduped_works)}
+                    
                 except Exception as e:
                     logger.exception(e)
                     raise Exception("Author API failed to return json")
