@@ -1,14 +1,17 @@
 import json
 from urllib.request import pathname2url
 import jsonschema
+from referencing import Registry, Resource
 import os
 import pytest
 
 # Get the root directory of the project (two levels up from this file)
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-# Path to the schema file
+# Paths to schema files
 IMPORT_SCHEMA = os.path.join(ROOT_DIR, 'olclient2', 'schemata', 'import.schema.json')
+SHARED_SCHEMA = os.path.join(ROOT_DIR, 'olclient2', 'schemata', 'shared_definitions.json')
+EDITION_SCHEMA = os.path.join(ROOT_DIR, 'olclient2', 'schemata', 'edition.schema.json')
 
 # Examples taken from openlibrary/plugins/importapi/import_edition_builder.py
 
@@ -91,8 +94,32 @@ examples = [
 
 @pytest.mark.parametrize('example', examples)
 def test_import_examples(example):
-    with open(IMPORT_SCHEMA) as schema_data:
+    with open(IMPORT_SCHEMA) as schema_data, \
+         open(SHARED_SCHEMA) as shared_data, \
+         open(EDITION_SCHEMA) as edition_data:
         schema = json.load(schema_data)
-        resolver = jsonschema.RefResolver('file:' + pathname2url(IMPORT_SCHEMA), schema)
-        result = jsonschema.Draft4Validator(schema, resolver=resolver).validate(example)
+        shared_schema = json.load(shared_data)
+        edition_schema = json.load(edition_data)
+        
+        # Create registry with all schemas
+        registry = (Registry()
+            .with_resource(
+                'file:' + pathname2url(IMPORT_SCHEMA),
+                Resource.from_contents(schema)
+            )
+            .with_resource(
+                'shared_definitions.json',  # This matches the reference in import.schema.json
+                Resource.from_contents(shared_schema)
+            )
+            .with_resource(
+                'edition.schema.json',  # This matches the reference in import.schema.json
+                Resource.from_contents(edition_schema)
+            )
+        )
+        
+        validator = jsonschema.validators.Draft4Validator(
+            schema,
+            registry=registry
+        )
+        result = validator.validate(example)
         assert result is None
