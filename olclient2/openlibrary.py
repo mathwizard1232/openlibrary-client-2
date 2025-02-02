@@ -19,6 +19,7 @@ from olclient2 import common
 from olclient2.config import Config
 from olclient2.entity_helpers.work import get_work_helper_class
 from olclient2.utils import merge_unique_lists
+from referencing import Registry, Resource
 
 logger = logging.getLogger('openlibrary')
 
@@ -110,12 +111,35 @@ class OpenLibrary:
         """
         path = os.path.dirname(os.path.realpath(__file__))
         schemata_path = os.path.join(path, 'schemata', schema_name)
-        with open(schemata_path) as schema_data:
+        shared_schema_path = os.path.join(path, 'schemata', 'shared_definitions.json')
+        edition_schema_path = os.path.join(path, 'schemata', 'edition.schema.json')
+        work_schema_path = os.path.join(path, 'schemata', 'work.schema.json')
+        author_schema_path = os.path.join(path, 'schemata', 'author.schema.json')
+        
+        with open(schemata_path) as schema_data, \
+             open(shared_schema_path) as shared_data, \
+             open(edition_schema_path) as edition_data, \
+             open(work_schema_path) as work_data, \
+             open(author_schema_path) as author_data:
             schema = json.load(schema_data)
-            resolver = jsonschema.RefResolver('file:' + pathname2url(schemata_path), schema)
-            return jsonschema.Draft4Validator(schema, resolver=resolver).validate(
-                doc.json()
-            )
+            shared_schema = json.load(shared_data)
+            edition_schema = json.load(edition_data)
+            work_schema = json.load(work_data)
+            author_schema = json.load(author_data)
+            
+            # Create registry with all schemas using their simple names
+            registry = Registry().with_resources([
+                (schema_name, Resource.from_contents(schema)),
+                ('shared_definitions.json', Resource.from_contents(shared_schema)),
+                ('edition.schema.json', Resource.from_contents(edition_schema)),
+                ('work.schema.json', Resource.from_contents(work_schema)),
+                ('author.schema.json', Resource.from_contents(author_schema))
+            ])
+            
+            return jsonschema.validators.Draft4Validator(
+                schema,
+                registry=registry
+            ).validate(doc.json())
 
     def delete(self, olid, comment):
         """Delete a single Open Library entity by olid (str)
