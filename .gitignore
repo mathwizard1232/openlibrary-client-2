@@ -14,3 +14,5 @@ dist/
 flycheck*
 settings.cfg
 venv/
+output.txt
+
