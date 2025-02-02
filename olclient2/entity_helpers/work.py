@@ -206,7 +206,10 @@ def get_work_helper_class(ol_context):
                 return cls.OL.session.get(ol_url)
 
             response = _get_book_by_metadata(url)
-            results = Results(**response.json())
+            response_data = response.json()
+            logger.debug(f"Raw API response: {response_data}")
+            results = Results(**response_data)
+            logger.debug(f"First doc authors before processing: {results.docs[0].authors if results.docs else 'no docs'}")
 
             if results.num_found:
                 logger.debug(f"Found {results.num_found} results")
@@ -215,7 +218,8 @@ def get_work_helper_class(ol_context):
                     seen_works = {}
                     for doc in results.docs:
                         title = doc.title.lower() if hasattr(doc, 'title') else ''
-                        authors = tuple(sorted(doc.author_name if hasattr(doc, 'author_name') else []))
+                        # Use the processed authors list instead of raw author_name
+                        authors = tuple(sorted(author['name'] for author in doc.authors)) if hasattr(doc, 'authors') else ()
                         dedup_key = (title, authors)
                         logger.debug(f"Processing doc with title: {title}, authors: {authors}")
                         
@@ -236,21 +240,15 @@ def get_work_helper_class(ol_context):
         @classmethod
         def _doc_to_book(cls, doc) -> Book:
             """Convert a search API document to a Book object."""
-            # Create authors
-            authors = []
-            author_names = getattr(doc, 'author_name', [])
-            author_keys = getattr(doc, 'author_key', [])
+            logger.debug(f"Converting doc to book. Doc authors: {doc.authors if hasattr(doc, 'authors') else 'no authors'}")
             
-            for i, name in enumerate(author_names):
-                author = Author(name=name)
-                if author_keys and i < len(author_keys):
-                    author.olid = author_keys[i]
-                authors.append(author)
-            
-            # Create book
+            # Create book with processed authors
             book = Book(
                 title=getattr(doc, 'title', ''),
-                authors=authors,
+                authors=[
+                    Author(name=author['name'], olid=author.get('olid'))
+                    for author in (doc.authors if hasattr(doc, 'authors') else [])
+                ],
                 publisher=getattr(doc, 'publisher', [''])[0] if hasattr(doc, 'publisher') else '',
                 publish_date=getattr(doc, 'publish_date', [''])[0] if hasattr(doc, 'publish_date') else ''
             )
