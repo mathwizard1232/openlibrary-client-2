@@ -103,3 +103,38 @@ class TestWorkSearch(unittest.TestCase):
     
         # Verify results
         self.assertEqual(len(results), 1, "Should deduplicate case-insensitive matches") 
+
+    @patch('requests.Session.get')
+    def test_search_deduplicates_identical_titles(self, mock_get):
+        """Test that work search deduplicates identical titles with same author"""
+        # Mock response data with same title under different work IDs
+        mock_response = {
+            'start': 0,
+            'num_found': 2,
+            'docs': [
+                {
+                    'key': '/works/OL24144951W',
+                    'title': 'Set Boundaries, Find Peace',
+                    'author_name': ['Nedra Glover Tawwab'],
+                    'author_key': ['OL9082862A'],
+                    'first_publish_year': 2021,
+                    'cover_edition_key': 'OL31855187M'
+                },
+                {
+                    'key': '/works/OL24476087W',
+                    'title': 'Set Boundaries, Find Peace',
+                    'author_name': ['Nedra Glover Tawwab'],
+                    'author_key': ['OL9082862A'],
+                    'cover_edition_key': 'OL32425140M'
+                }
+            ]
+        }
+        mock_get.return_value.json.return_value = mock_response
+
+        # Perform search
+        results = self.ol.Work.search(title='Set Boundaries, Find Peace', author='Nedra Glover Tawwab', limit=2)
+
+        # Verify results
+        self.assertEqual(len(results), 1, "Should deduplicate identical titles from same author")
+        self.assertEqual(results[0].title, 'Set Boundaries, Find Peace')
+        self.assertEqual(results[0].authors[0]['name'], 'Nedra Glover Tawwab') 
