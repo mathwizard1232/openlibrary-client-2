@@ -66,4 +66,36 @@ class TestWorkSearch(unittest.TestCase):
         self.assertIsNotNone(book)
         self.assertEqual(len(book.authors), 1)
         self.assertEqual(book.authors[0].name, 'John Smith')
-        self.assertFalse(hasattr(book.authors[0], 'olid')) 
+        self.assertFalse(hasattr(book.authors[0], 'olid'))
+
+    @patch('requests.Session.get')
+    def test_search_deduplicates_case_insensitive(self, mock_get):
+        """Test that work search deduplicates titles case-insensitively"""
+        # Mock response data with same title in different cases
+        mock_response = {
+            'docs': [
+                {
+                    'key': '/works/OL50991W',
+                    'title': 'The Cherokee Trail',
+                    'author_name': ["Louis L'Amour"],
+                    'author_key': ['OL19482A'],
+                    'first_publish_year': 1982
+                },
+                {
+                    'key': '/works/OL19931920W',
+                    'title': 'The Cherokee trail',
+                    'author_name': ["Louis L'Amour"],
+                    'author_key': ['OL19482A'],
+                    'first_publish_year': 2008
+                }
+            ]
+        }
+        mock_get.return_value.json.return_value = mock_response
+
+        # Perform search
+        results = self.ol.Work.search(title='Cherokee Trail', author="Louis L'Amour", limit=2)
+
+        # Verify results
+        self.assertEqual(len(results), 1, "Should deduplicate case-insensitive matches")
+        self.assertEqual(results[0].title, 'The Cherokee Trail')  # Should keep the first occurrence
+        self.assertEqual(results[0].identifiers['olid'], ['OL50991W']) 
