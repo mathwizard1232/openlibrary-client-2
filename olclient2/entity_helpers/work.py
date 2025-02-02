@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import logging
 import re
-from typing import List, Dict, Optional, Any
+from typing import List, Dict, Optional, Any, Union
 
 import backoff
 from requests import Response
@@ -161,7 +161,7 @@ def get_work_helper_class(ol_context):
             return cls(olid, **r.json())
 
         @classmethod
-        def search(cls, title: Optional[str] = None, author: Optional[str] = None, limit: Optional[int] = None) -> Optional[Book]:
+        def search(cls, title: Optional[str] = None, author: Optional[str] = None, limit: Optional[int] = None) -> Optional[Union[Book, List[Book]]]:
             """Get the *closest* matching result in OpenLibrary based on a title
             and author.
             
@@ -188,9 +188,11 @@ def get_work_helper_class(ol_context):
             if not (title or author):
                 raise ValueError("Author or title required for metadata search")
 
-            url = f'{cls.OL.base_url}/search.json?title={title}'
+            url = f'{cls.OL.base_url}/search.json?'
+            if title:
+                url += f'title={title}'
             if author:
-                url += f'&author={author}'
+                url += f'&author={author}' if title else f'author={author}'
             if limit:
                 url += f'&limit={limit}'
 
@@ -212,19 +214,48 @@ def get_work_helper_class(ol_context):
                     seen_works = {}  # (title, author_names) -> doc mapping
                     for doc in results.docs:
                         dedup_key = (
-                            doc.get('title', '').lower(),
-                            tuple(sorted(doc.get('author_name', [])))
+                            doc.title.lower() if hasattr(doc, 'title') else '',
+                            tuple(sorted(doc.author_name if hasattr(doc, 'author_name') else []))
                         )
                         # If we haven't seen this title/author combination before, or this work has a more complete record
-                        if dedup_key not in seen_works or len(doc) > len(seen_works[dedup_key]):
+                        if dedup_key not in seen_works or len(vars(doc)) > len(vars(seen_works[dedup_key])):
                             seen_works[dedup_key] = doc
                     
                     # Convert back to list and create book objects
                     deduped_docs = list(seen_works.values())[:limit]
-                    return [doc.to_book() for doc in deduped_docs]
+                    return [cls._doc_to_book(doc) for doc in deduped_docs]
                 return results.first.to_book()
 
             return None
+
+        @classmethod
+        def _doc_to_book(cls, doc) -> Book:
+            """Convert a search API document to a Book object."""
+            # Create authors
+            authors = []
+            author_names = getattr(doc, 'author_name', [])
+            author_keys = getattr(doc, 'author_key', [])
+            
+            for i, name in enumerate(author_names):
+                author = Author(name=name)
+                if author_keys and i < len(author_keys):
+                    author.olid = author_keys[i]
+                authors.append(author)
+            
+            # Create book
+            book = Book(
+                title=getattr(doc, 'title', ''),
+                authors=authors,
+                publisher=getattr(doc, 'publisher', [''])[0] if hasattr(doc, 'publisher') else '',
+                publish_date=getattr(doc, 'publish_date', [''])[0] if hasattr(doc, 'publish_date') else ''
+            )
+            
+            # Add work ID
+            if hasattr(doc, 'key'):
+                work_olid = doc.key.split('/')[-1]
+                book.add_id('olid', work_olid)
+                
+            return book
 
         @classmethod
         def search_by_isbn(cls, isbn: str) -> Optional[Book]:
