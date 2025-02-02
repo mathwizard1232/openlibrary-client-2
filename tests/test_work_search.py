@@ -137,4 +137,29 @@ class TestWorkSearch(unittest.TestCase):
         # Verify results
         self.assertEqual(len(results), 1, "Should deduplicate identical titles from same author")
         self.assertEqual(results[0].title, 'Set Boundaries, Find Peace')
-        self.assertEqual(results[0].authors[0].name, 'Nedra Glover Tawwab') 
+        self.assertEqual(results[0].authors[0].name, 'Nedra Glover Tawwab')
+
+    @patch('requests.Session.get')
+    def test_search_preserves_work_olid(self, mock_get):
+        """Test that work search preserves the work OLID in book identifiers"""
+        mock_response = {
+            'num_found': 1,
+            'docs': [{
+                'key': '/works/OL123W',
+                'title': 'The Flame of Iridar and Peril of the Starmen',
+                'authors': [{'name': 'Lin Carter', 'olid': 'OL123A'}],
+                'first_publish_year': 1967
+            }]
+        }
+        mock_get.return_value.json.return_value = mock_response
+
+        # Perform search
+        results = self.ol.Work.search(title='The Flame of Iridar')
+
+        # Verify results
+        self.assertIsNotNone(results)
+        self.assertEqual(len(results.identifiers.get('olid', [])), 1, "Should have one work OLID")
+        self.assertEqual(results.identifiers['olid'][0], 'OL123W', "Should extract work ID correctly")
+        self.assertEqual(len(results.authors), 1, "Should have one author")
+        self.assertEqual(results.authors[0].name, 'Lin Carter')
+        self.assertEqual(results.authors[0].olid, 'OL123A') 
