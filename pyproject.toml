@@ -59,6 +59,8 @@ show_error_context = true
 
 [tool.pytest.ini_options]
 norecursedirs = ["lib*"]
+log_cli = true
+log_cli_level = "DEBUG"
 
 [tool.ruff]
 extend-select = ["C4", "C9", "PLC", "PLE", "W"]

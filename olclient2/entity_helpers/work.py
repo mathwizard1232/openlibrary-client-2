@@ -209,23 +209,28 @@ def get_work_helper_class(ol_context):
             results = Results(**response.json())
 
             if results.num_found:
-                if limit and limit > 1:
+                logger.debug(f"Found {results.num_found} results")
+                if limit:
                     # Deduplicate works based on title and author combination
-                    seen_works = {}  # (title, author_names) -> doc mapping
+                    seen_works = {}
                     for doc in results.docs:
-                        dedup_key = (
-                            doc.title.lower() if hasattr(doc, 'title') else '',
-                            tuple(sorted(doc.author_name if hasattr(doc, 'author_name') else []))
-                        )
+                        title = doc.title.lower() if hasattr(doc, 'title') else ''
+                        authors = tuple(sorted(doc.author_name if hasattr(doc, 'author_name') else []))
+                        dedup_key = (title, authors)
+                        logger.debug(f"Processing doc with title: {title}, authors: {authors}")
+                        
                         # If we haven't seen this title/author combination before, or this work has a more complete record
                         if dedup_key not in seen_works or len(vars(doc)) > len(vars(seen_works[dedup_key])):
                             seen_works[dedup_key] = doc
+                            logger.debug(f"Added/Updated work with key: {dedup_key}")
                     
                     # Convert back to list and create book objects
                     deduped_docs = list(seen_works.values())[:limit]
+                    logger.debug(f"Returning {len(deduped_docs)} deduplicated results")
                     return [cls._doc_to_book(doc) for doc in deduped_docs]
                 return results.first.to_book()
 
+            logger.debug("No results found")
             return None
 
         @classmethod
