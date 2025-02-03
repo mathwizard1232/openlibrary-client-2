@@ -32,6 +32,15 @@ $ pip install .
 $ pipx install git+https://github.com/mathwizard1232/openlibrary-client-2.git
 ```
 
+## Reinstallation
+
+I'm doing fairly active "move fast and break things" on this, and not properly versioning, so in order to install latest, you'll need:
+
+```bash
+pip uninstall openlibrary-client-2
+pip install --no-cache-dir git+https://github.com/mathwizard1232/openlibrary-client-2.git
+```
+
 ## Configuration
 ### Authentication Against Production
 
