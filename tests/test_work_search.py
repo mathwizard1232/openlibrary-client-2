@@ -137,7 +137,7 @@ class TestWorkSearch(unittest.TestCase):
         # Verify results
         self.assertEqual(len(results), 1, "Should deduplicate identical titles from same author")
         self.assertEqual(results[0].title, 'Set Boundaries, Find Peace')
-        self.assertEqual(results[0].authors[0].name, 'Nedra Glover Tawwab')
+        self.assertEqual(results[0].authors[0]['name'], 'Nedra Glover Tawwab')
 
     @patch('requests.Session.get')
     def test_search_preserves_work_olid(self, mock_get):

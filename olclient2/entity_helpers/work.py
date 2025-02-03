@@ -243,7 +243,7 @@ def get_work_helper_class(ol_context):
             """Convert a search API document to a Book object."""
             logger.debug(f"Converting doc to book. Doc authors: {doc.authors if hasattr(doc, 'authors') else 'no authors'}")
             logger.debug(f"Doc type: {type(doc)}")
-            
+            """
             # Create book with processed authors
             authors = [
                 Author(name=author['name'], olid=author.get('olid'))
@@ -252,6 +252,7 @@ def get_work_helper_class(ol_context):
             logger.debug(f"Created authors: {authors}")
             
             book = Book(
+                key=doc.key,
                 title=getattr(doc, 'title', ''),
                 authors=authors,
                 publisher=getattr(doc, 'publisher', [''])[0] if hasattr(doc, 'publisher') else '',
@@ -264,7 +265,9 @@ def get_work_helper_class(ol_context):
                 book.add_id('olid', work_olid)
                 logger.debug(f"Added work OLID: {work_olid}")
                 
-            return book
+            return book"""
+            # Maybe just use the method for it
+            return doc.to_book()
 
         @classmethod
         def search_by_isbn(cls, isbn: str) -> Optional[Book]:
