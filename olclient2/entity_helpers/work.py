@@ -262,6 +262,7 @@ def get_work_helper_class(ol_context):
             if hasattr(doc, 'key'):
                 work_olid = doc.key.split('/')[-1]
                 book.add_id('olid', work_olid)
+                logger.debug(f"Added work OLID: {work_olid}")
                 
             return book
 
