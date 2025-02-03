@@ -242,14 +242,18 @@ def get_work_helper_class(ol_context):
         def _doc_to_book(cls, doc) -> Book:
             """Convert a search API document to a Book object."""
             logger.debug(f"Converting doc to book. Doc authors: {doc.authors if hasattr(doc, 'authors') else 'no authors'}")
+            logger.debug(f"Doc type: {type(doc)}")
             
             # Create book with processed authors
+            authors = [
+                Author(name=author['name'], olid=author.get('olid'))
+                for author in (doc.authors if hasattr(doc, 'authors') else [])
+            ]
+            logger.debug(f"Created authors: {authors}")
+            
             book = Book(
                 title=getattr(doc, 'title', ''),
-                authors=[
-                    Author(name=author['name'], olid=author.get('olid'))
-                    for author in (doc.authors if hasattr(doc, 'authors') else [])
-                ],
+                authors=authors,
                 publisher=getattr(doc, 'publisher', [''])[0] if hasattr(doc, 'publisher') else '',
                 publish_date=getattr(doc, 'publish_date', [''])[0] if hasattr(doc, 'publish_date') else ''
             )

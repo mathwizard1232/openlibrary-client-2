@@ -29,6 +29,7 @@ class Results:
             subject: Optional[str] = None,
             author_name="",
             author_key=None,
+            authors=None,
             edition_key=None,
             language="",
             publisher=None,
@@ -50,6 +51,7 @@ class Results:
                 subject (list of unicode) [optional]
                 author_name (list of unicode)
                 author_key (list of unicode) - list of author OLIDs
+                authors (list of dict) - direct authors list format
                 edition_key (list of unicode) - list of edition OLIDs
                 language (unicode)
                 publisher (list of unicode)
@@ -68,12 +70,18 @@ class Results:
             self.title = title
             self.subtitle = subtitle
             self.subjects = subject
-            # XXX test that during the zip, author_name and author_key
-            # correspond to each other one-to-one, in order
-            self.authors = [
-                {"name": name, "olid": author_olid}
-                for (name, author_olid) in zip(author_name or [], author_key or [])
-            ]
+            
+            # Handle both author formats
+            if authors:
+                # Direct authors list format
+                self.authors = authors
+            else:
+                # author_name/author_key format
+                self.authors = [
+                    {"name": name, "olid": author_olid}
+                    for (name, author_olid) in zip(author_name or [], author_key or [])
+                ]
+
             self.publishers = publisher
             self.publish_dates = publish_date
             self.publish_places = publish_place
